@@ -115,7 +115,6 @@ namespace Transportlaget
 		public void send(byte[] buf, int size)
 		{
 			bool receivedACK = false;
-			var bytesSend = 0;
 			byte[] buff;
 
 			if (size <= 1000)
@@ -143,7 +142,7 @@ namespace Transportlaget
 				{
 					Array.Copy(buf, (i * 1000), buff, 4, 1000);
 					buff[(int)TransCHKSUM.SEQNO] = (byte)seqNo;
-					buff[(int)TransCHKSUM.TYPE] = (byte)0;
+					buff[(int)TransCHKSUM.TYPE] = (byte)TransType.DATA;
 
 					checksum.calcChecksum(ref buff, buff.Length);
 
@@ -153,16 +152,15 @@ namespace Transportlaget
 						receivedACK = receiveAck();
 					}
 					receivedACK = false;
-					bytesSend += 1000;
 				}
 
 				if (size % 1000 != 0)
 				{
-
+					Array.Copy(buf, (size/1000*1000), buff, 4, size%1000);
 					buff[(int)TransCHKSUM.SEQNO] = (byte)seqNo;
-					buff[(int)TransCHKSUM.TYPE] = (byte)0;
+					buff[(int)TransCHKSUM.TYPE] = (byte)TransType.DATA;
 
-					checksum.calcChecksum(ref buff, buff.Length);
+					checksum.calcChecksum(ref buff, size%1000);
 
 					while (!receivedACK)
 					{
@@ -170,8 +168,7 @@ namespace Transportlaget
 						receivedACK = receiveAck();
 					}
 					receivedACK = false;
-					bytesSend += 1000;
-
+                    
 				}
 
 			}
@@ -185,12 +182,14 @@ namespace Transportlaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
-			// TO DO Your own code
+			var sumReceived = 0;
+			var buff = new byte[buf.Length];
+			recvSize = link.receive(ref buf);
+			sendAck(checksum.checkChecksum(buf, recvSize));
+   
 
-			var length = link.receive(ref buf);
-			sendAck(checksum.checkChecksum(buf, length));
             
-			return buf.Length;
+			return sumReceived;
 		}
 	}
 }
