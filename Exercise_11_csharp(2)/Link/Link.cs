@@ -106,48 +106,50 @@ namespace Linklaget
 		/// <param name='size'>
 		/// Size.
 		/// </param>
-		public int receive (ref byte[] buf)
-		{
-			var buffer = new byte[buf.Length];
-			int byteReceived;
-			var i = 0;
+		public int receive(ref byte[] buf)
+        {
+            var buffer = new byte[buf.Length];
+            int byteReceived;
+            bool doneReading = false;
+            var i = 0;
 
-            while (true)
-			{
-				byteReceived = serialPort.ReadByte();
-				if (byteReceived == (-1))
-					break;
+            while (!doneReading)
+            {
+                byteReceived = serialPort.ReadByte();
+                if (byteReceived == 0)
+                {
+                    doneReading = true;
+                }
+                else buf[i++] = (byte)byteReceived;
 
-				buf[i++] = (byte)byteReceived;
-                
-			}
+            }
 
-			i = 0;
-			var j = 0; 
+            i = 0;
+            var j = 0;
 
-			if (buf[i++]==(byte)'A')
-			{
-				while(buf[i]!=(byte)'A')
-				{
-					if (buf[i] == (byte)'B')
-					{
-						i++;
+            if (buf[i] == (byte)'A')
+            {
+                i++;
 
-						if (buf[i] == (byte)'C')
-							buffer[j++] = (byte)'A';
+                while (buf[i] != (byte)'A')
+                {
+                    if (buf[i] == (byte)'B')
+                    {
+                        i++;
 
-						if (buf[i] == (byte)'D')
-							buffer[j++] = (byte)'B';
-					}
-					else { buffer[j++] = buf[i]; }
+                        if (buf[i] == (byte)'C')
+                            buffer[j++] = (byte)'A';
+                        else buffer[j++] = (byte)'B';
+                    }
+                    else { buffer[j++] = buf[i]; }
 
-					i++;
-				}
-			}
+                    i++;
+                }
+            }
 
-			buffer.CopyTo(buf, 0);
+            buffer.CopyTo(buf, 0);
 
-			return j;
-		}
+            return (j);
+        }
 	}
 }
