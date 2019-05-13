@@ -114,22 +114,67 @@ namespace Transportlaget
 		/// </param>
 		public void send(byte[] buf, int size)
 		{
-			var buff = new byte[(size + 4)];
 			bool receivedACK = false;
+			var bytesSend = 0;
+			byte[] buff;
 
-			Array.Copy(buf, 0, buff, 4, size);
-            
-			buff[(int)TransCHKSUM.SEQNO] = (byte)seqNo++; //skal old_seqno tælles op?
-			buff[(int)TransCHKSUM.TYPE] = (byte)0; 
-
-			checksum.calcChecksum(ref buff, buff.Length);
-
-			while(!receivedACK)
+			if (size <= 1000)
 			{
-				link.send(buff, buff.Length);
-				receivedACK = receiveAck();
+				buff = new byte[(size + 4)];
+				Array.Copy(buf, 0, buff, 4, size);
+
+				buff[(int)TransCHKSUM.SEQNO] = (byte)seqNo;
+				buff[(int)TransCHKSUM.TYPE] = (byte)0;
+
+				checksum.calcChecksum(ref buff, buff.Length);
+
+				while (!receivedACK)
+				{
+					link.send(buff, buff.Length);
+					receivedACK = receiveAck();
+				}
+				receivedACK = false;
 			}
-                    
+			else
+			{
+				buff = new byte[1004];
+
+				for (int i = 0; i < (size / 1000); i++)
+				{
+					Array.Copy(buf, (i * 1000), buff, 4, 1000);
+					buff[(int)TransCHKSUM.SEQNO] = (byte)seqNo;
+					buff[(int)TransCHKSUM.TYPE] = (byte)0;
+
+					checksum.calcChecksum(ref buff, buff.Length);
+
+					while (!receivedACK)
+					{
+						link.send(buff, buff.Length);
+						receivedACK = receiveAck();
+					}
+					receivedACK = false;
+					bytesSend += 1000;
+				}
+
+				if (size % 1000 != 0)
+				{
+
+					buff[(int)TransCHKSUM.SEQNO] = (byte)seqNo;
+					buff[(int)TransCHKSUM.TYPE] = (byte)0;
+
+					checksum.calcChecksum(ref buff, buff.Length);
+
+					while (!receivedACK)
+					{
+						link.send(buff, buff.Length);
+						receivedACK = receiveAck();
+					}
+					receivedACK = false;
+					bytesSend += 1000;
+
+				}
+
+			}
 		}
 
 		/// <summary>
@@ -142,8 +187,8 @@ namespace Transportlaget
 		{
 			// TO DO Your own code
 
-			link.receive(ref buf);
-			sendAck(checksum.checkChecksum(buf, buf.Length));
+			var length = link.receive(ref buf);
+			sendAck(checksum.checkChecksum(buf, length));
             
 			return buf.Length;
 		}
