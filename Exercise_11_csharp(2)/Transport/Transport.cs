@@ -184,8 +184,15 @@ namespace Transportlaget
 		{
 			var sumReceived = 0;
 			var buff = new byte[buf.Length];
-			recvSize = link.receive(ref buf);
-			sendAck(checksum.checkChecksum(buf, recvSize));
+			recvSize = link.receive(ref buff);
+
+			if (checksum.checkChecksum(buf, recvSize))
+			{
+				Array.Copy(buff, 4, buf, sumReceived, (recvSize - 4));
+				sendAck(true);
+			}
+			else sendAck(false);
+				
    
 
             
