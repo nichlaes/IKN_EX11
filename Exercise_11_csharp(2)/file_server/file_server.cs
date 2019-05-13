@@ -20,7 +20,13 @@ namespace Application
 		/// </summary>
 		private file_server ()
 		{
-			// TO DO Your own code
+			// While loop
+
+			string file = LIB.extractFileName(fileName);
+            if (LIB.check_File_Exists(file))
+            {
+				byte[] bytes = Encoding.ASCII.GetBytes(someString); //UTF8
+            }
 		}
 
 		/// <summary>
@@ -37,41 +43,49 @@ namespace Application
 		/// </param>
 		private void sendFile(String fileName, long fileSize, Transport transport)
 		{
-			// TO DO Your own code
+			var buff = new byte[BUFSIZE];
+
+			FileStream fs = new FileStream(fileName,
+                FileMode.Open,
+                FileAccess.Read);
+            BinaryReader br = new BinaryReader(fs);
+            long numBytes = fileSize;
+            int sendBytes = 0;
+
+            if (fileSize>=1000)
+			{
+				for (int i = 0; i < fileSize / 1000; i++)
+                {
+                    for (int j = 0; j < 1000; j++)
+                    {
+                        buff[j] = br.ReadByte();
+                        sendBytes++;
+                    }
+
+					transport.send(buff,BUFSIZE);
+			    }
+
+			}
+
+			if (fileSize % 1000 != 0)
+            {
+				for (int j = 0; j < (fileSize%1000); j++)
+                {
+					buff[j] = br.ReadByte();   
+					sendBytes++;
+                }
+
+				transport.send(buff, (int)(fileSize%1000));
+             }
+
+
+            
+
+          
+            
 		}
 
-		public void send(ref byte[] buf, int size)
-        {
-			var buffer = new byte[20];
 
-			buffer[0] = (byte)'A';
-            var j = 1;
-
-            for (int i = 0; i < size; i++)
-            {
-                switch (buf[i])
-                {
-                    case (byte)'A':
-                        buffer[j++] = (byte)'B';
-                        buffer[j++] = (byte)'c';
-                        break;
-
-                    case (byte)'B':
-                        buffer[j++] = (byte)'B';
-                        buffer[j++] = (byte)'D';
-                        break;
-
-                    default:
-                        buffer[j++] = buf[i];
-                        break;
-                }
-            }
-
-			buffer[j] = (byte)'A';
-			buf = buffer;
-        }
-
-        
 
 		/// <summary>
 		/// The entry point of the program, where the program control starts and ends.
