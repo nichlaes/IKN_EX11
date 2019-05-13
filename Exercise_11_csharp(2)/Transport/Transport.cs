@@ -116,62 +116,22 @@ namespace Transportlaget
 		{
 			bool receivedACK = false;
 			byte[] buff;
+   
+			buff = new byte[(size + 4)];
+			Array.Copy(buf, 0, buff, 4, size);
 
-			if (size <= 1000)
+			buff[(int)TransCHKSUM.SEQNO] = (byte)seqNo;
+			buff[(int)TransCHKSUM.TYPE] = (byte)0;
+
+			checksum.calcChecksum(ref buff, buff.Length);
+
+			while (!receivedACK)
 			{
-				buff = new byte[(size + 4)];
-				Array.Copy(buf, 0, buff, 4, size);
-
-				buff[(int)TransCHKSUM.SEQNO] = (byte)seqNo;
-				buff[(int)TransCHKSUM.TYPE] = (byte)0;
-
-				checksum.calcChecksum(ref buff, buff.Length);
-
-				while (!receivedACK)
-				{
-					link.send(buff, buff.Length);
-					receivedACK = receiveAck();
-				}
-				receivedACK = false;
+				link.send(buff, buff.Length);
+				receivedACK = receiveAck();
 			}
-			else
-			{
-				buff = new byte[1004];
 
-				for (int i = 0; i < (size / 1000); i++)
-				{
-					Array.Copy(buf, (i * 1000), buff, 4, 1000);
-					buff[(int)TransCHKSUM.SEQNO] = (byte)seqNo;
-					buff[(int)TransCHKSUM.TYPE] = (byte)TransType.DATA;
 
-					checksum.calcChecksum(ref buff, buff.Length);
-
-					while (!receivedACK)
-					{
-						link.send(buff, buff.Length);
-						receivedACK = receiveAck();
-					}
-					receivedACK = false;
-				}
-
-				if (size % 1000 != 0)
-				{
-					Array.Copy(buf, (size/1000*1000), buff, 4, size%1000);
-					buff[(int)TransCHKSUM.SEQNO] = (byte)seqNo;
-					buff[(int)TransCHKSUM.TYPE] = (byte)TransType.DATA;
-
-					checksum.calcChecksum(ref buff, size%1000);
-
-					while (!receivedACK)
-					{
-						link.send(buff, buff.Length);
-						receivedACK = receiveAck();
-					}
-					receivedACK = false;
-                    
-				}
-
-			}
 		}
 
 		/// <summary>
@@ -182,21 +142,20 @@ namespace Transportlaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
-			var sumReceived = 0;
 			var buff = new byte[buf.Length];
 			recvSize = link.receive(ref buff);
 
-			if (checksum.checkChecksum(buf, recvSize))
+			while(!checksum.checkChecksum(buff, recvSize)||buff[(int)TransCHKSUM.SEQNO] != seqNo)
 			{
-				Array.Copy(buff, 4, buf, sumReceived, (recvSize - 4));
-				sendAck(true);
+				sendAck(false);
+                recvSize = link.receive(ref buff);    
 			}
-			else sendAck(false);
-				
-   
+				Array.Copy(buff, 4, buf, 0, (recvSize - 4));
+                sendAck(true);
+				  
 
             
-			return sumReceived;
+			return recvSize;
 		}
 	}
 }
