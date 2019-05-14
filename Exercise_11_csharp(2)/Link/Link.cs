@@ -112,15 +112,19 @@ namespace Linklaget
             int byteReceived;
             bool doneReading = false;
             var i = 0;
+			var DelCount = 0;
 
             while (!doneReading)
             {
                 byteReceived = serialPort.ReadByte();
-                if (byteReceived == 0)
+                if (byteReceived == (byte)'A')
                 {
+					DelCount++;
+					if(DelCount ==2)
                     doneReading = true;
                 }
-                else buf[i++] = (byte)byteReceived;
+                
+				buf[i++] = (byte)byteReceived;
 
             }
 
