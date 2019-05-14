@@ -21,12 +21,29 @@ namespace Application
 		private file_server ()
 		{
 			// While loop
+			String fileName;
+			long fileSize;
+			var buff = new byte[BUFSIZE];
+			var transport = new Transport(1000, APP);
 
-			string file = LIB.extractFileName(fileName);
-            if (LIB.check_File_Exists(file))
-            {
-				byte[] bytes = Encoding.ASCII.GetBytes(someString); //UTF8
-            }
+			while (true)
+			{
+				transport.receive(ref buff);
+
+				fileName = Encoding.ASCII.GetString(buff);
+
+				string file = LIB.extractFileName(fileName);
+				fileSize = LIB.check_File_Exists(file); //error handling
+
+				if (fileSize != 0)
+				{
+					var fileSizeToSend = Encoding.ASCII.GetBytes(fileSize.ToString());
+
+					transport.send(fileSizeToSend, fileSizeToSend.Length);
+					sendFile(file, fileSize, transport);
+				}
+
+			}      
 		}
 
 		/// <summary>
@@ -44,6 +61,8 @@ namespace Application
 		private void sendFile(String fileName, long fileSize, Transport transport)
 		{
 			var buff = new byte[BUFSIZE];
+
+
 
 			FileStream fs = new FileStream(fileName,
                 FileMode.Open,
@@ -95,7 +114,7 @@ namespace Application
 		/// </param>
 		public static void Main (string[] args)
 		{
-			//new file_server();
+			new file_server();
 
            
 		}
