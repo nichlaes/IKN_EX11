@@ -35,7 +35,7 @@ namespace Application
             // determines which end (client or server) of the serial connection this application is.
             var transportConnection = new Transport(BUFSIZE, APP);
 
-            byte[] fileToRequestBytes = Encoding.ASCII.GetBytes(fileToRequest);
+			byte[] fileToRequestBytes = Encoding.UTF8.GetBytes(fileToRequest);
             transportConnection.send(fileToRequestBytes, fileToRequestBytes.Length); // Request specific files size           
 
             Console.WriteLine($"{fileToRequest} After send");
@@ -73,7 +73,8 @@ namespace Application
             int bytesReceivingNow;
             byte[] buf = new byte[BUFSIZE];
 
-            byte[] fileNameBytes = Encoding.ASCII.GetBytes(fileName);
+            // Maybe do so requested file is sent in packets of size 1000? not really need though
+            byte[] fileNameBytes = Encoding.UTF8.GetBytes(fileName);
             transport.send(fileNameBytes, fileNameBytes.Length); // Request specific file
 
             while (bytesReceived < fileSize)

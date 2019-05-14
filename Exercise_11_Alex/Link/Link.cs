@@ -108,11 +108,12 @@ namespace Linklaget
 		/// </param>
 		public int receive(ref byte[] buf)
         {
-			var buffer = new byte[buf.Length]; // Men skulle den ikke altid være BUFSIZE * 2?
+			//var buffer = new byte[buf.Length]; // Men skulle den ikke altid være BUFSIZE * 2?
             int byteReceived;
             bool doneReading = false;
             var i = 0;
 			var DelCount = 0;
+            //byte[] tmpBuf = 
 
             while (!doneReading)
             {
@@ -120,11 +121,62 @@ namespace Linklaget
                 if (byteReceived == (byte)'A')
                 {
 					DelCount++;
-					if(DelCount ==2)
+					if(DelCount == 2)
                     doneReading = true;
                 }
                 
-				buf[i++] = (byte)byteReceived;
+				buffer[i++] = (byte)byteReceived;
+
+            }
+			Console.WriteLine("debug link.receive done reading");
+            i = 0;
+            var j = 0;
+            
+            if (buffer[i] == (byte)'A')
+            {
+                i++;
+
+                while (buffer[i] != (byte)'A')
+                {
+                    if (buffer[i] == (byte)'B')
+                    {
+                        i++;
+
+                        if (buffer[i] == (byte)'C')
+                            buf[j++] = (byte)'A';
+                        else buf[j++] = (byte)'B';
+                    }
+                    else { buf[j++] = buffer[i]; }
+
+                    i++;                    
+                }
+
+                
+            }
+
+			Console.WriteLine("debug link.receive done with alorithm");
+            //buffer.CopyTo(buf, 0);
+
+            return (j);
+
+            /*
+             * //var buffer = new byte[buf.Length]; // Men skulle den ikke altid være BUFSIZE * 2?
+            int byteReceived;
+            bool doneReading = false;
+            var i = 0;
+            var DelCount = 0;
+
+            while (!doneReading)
+            {
+                byteReceived = serialPort.ReadByte();
+                if (byteReceived == (byte)'A')
+                {
+                    DelCount++;
+                    if(DelCount ==2)
+                    doneReading = true;
+                }
+                
+                buf[i++] = (byte)byteReceived;
 
             }
 
@@ -154,6 +206,7 @@ namespace Linklaget
             buffer.CopyTo(buf, 0);
 
             return (j);
+              */
         }
 	}
 }

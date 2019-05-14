@@ -21,7 +21,7 @@ namespace Application
 		private file_server ()
 		{
 			// While loop
-			String fileName;
+			string fileName;
 			long fileSize;
 			var buff = new byte[BUFSIZE];
 			var transport = new Transport(BUFSIZE, APP);
@@ -30,23 +30,47 @@ namespace Application
 
 			while (true)
 			{
-				Console.WriteLine("debug: server before receive"); //test
-				counter = transport.receive(ref buff);
-				Console.WriteLine("debug: server after receive"); //test
-
+				Console.WriteLine("debug: server before receive for filename"); //test
+				counter = transport.receive(ref buff); // result of transport might be buggy :(
+			
                 // test changing to get this name and file correctly first time
-				fileName = Encoding.ASCII.GetString(buff,0, counter);
+				fileName = Encoding.UTF8.GetString(buff, 0, buff.Length);
+				//fileName = fileName + '\0'; // test
 
-                string file = LIB.extractFileName(fileName);
+                String file = LIB.extractFileName(fileName);
 				Console.WriteLine($"debug: server extracted filename: {file}");
 				fileSize = LIB.check_File_Exists(file); //error handling
 
+
+				// TESTING
+				string teststring = "FileToSend.txt";
+
+				if (teststring.IndexOfAny(Path.GetInvalidFileNameChars()) > 0)
+                {
+                    Console.WriteLine("debug: teststring har illegal filename");
+                }
+				else
+					Console.WriteLine("debug: teststring er helt ok, selvom den ligner den anden");
+
+				int indexOfIllegaChar = file.IndexOfAny(Path.GetInvalidFileNameChars());
+				if(indexOfIllegaChar > 0)
+				{
+					Console.WriteLine($"debug: har illegal filename on index {indexOfIllegaChar}");
+					Console.WriteLine($"debug: charen er {file[indexOfIllegaChar]}");
+				}
+
+			
+
+				File.OpenRead(file);
+
+
+                // TESTING DONE
 				Console.WriteLine($"debug: filesize before if statement is {fileSize}");
 
 				if (fileSize != 0)
 				{
 					Console.WriteLine("debug: server in filesize!=0 before transport.send");
-					var fileSizeToSend = Encoding.ASCII.GetBytes(fileSize.ToString());
+					var fileSizeToSend = Encoding.UTF8.GetBytes(fileSize.ToString());
 
 					transport.send(fileSizeToSend, fileSizeToSend.Length);
 					Console.WriteLine("debug: server in after transport.send before sendFile()");

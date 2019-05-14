@@ -114,29 +114,57 @@ namespace Transportlaget
 		/// </param>
 		public void send(byte[] buf, int size)
 		{
-			bool receivedACK = false;
-			byte[] buff;
-   
-			buff = new byte[(size + 4)];
-			Array.Copy(buf, 0, buff, 4, size);
+			// we using dataReceived instead
+			//bool receivedACK = false;
+			//byte[] buff = new byte[(size + 4)];
 
-			buff[(int)TransCHKSUM.SEQNO] = (byte)seqNo;
-			buff[(int)TransCHKSUM.TYPE] = (byte)0;
+			/*// Send one packet with data of size 1000 untill whole message is sent
+			for (int i = 0; i < buffer.Length; i += buffer.Length)
+			{
+				buffer[(int)TransCHKSUM.SEQNO] = (byte)seqNo;
+                buffer[(int)TransCHKSUM.TYPE] = (byte)TransType.DATA;
+                
+				Array.Copy(buf, i, buffer, 4, buffer.Length - 4);
 
-			checksum.calcChecksum(ref buff, buff.Length);
+				checksum.calcChecksum(ref buffer, buffer.Length);
 
-			while (!receivedACK)
+				while (!receivedACK)
+                {
+                    Console.WriteLine("debug: transport.send in receivedAck while loop begining");
+                    link.send(buff, buff.Length);
+                    Console.WriteLine("debug: transport.send in receivedAck while loop middle");
+                    receivedACK = receiveAck();
+                    Console.WriteLine("debug: transport.send in receivedAck while loop end");
+                }
+
+				receivedACK = false;
+
+				//seqNo = (byte)((buffer[(int)TransCHKSUM.SEQNO] + 1) % 2);
+                              
+			}*/
+
+			if (size > buffer.Length)
+				Console.WriteLine("size of message give to buffer is too big");
+
+			Array.Copy(buf, 0, buffer, 4, size); // size because application doesn't give too big packets
+
+			buffer[(int)TransCHKSUM.SEQNO] = (byte)seqNo;
+			buffer[(int)TransCHKSUM.TYPE] = (byte)TransType.DATA;
+
+			checksum.calcChecksum(ref buffer, buffer.Length);
+
+			while (!dataReceived)
 			{
 				Console.WriteLine("debug: transport.send in receivedAck while loop begining");
-                link.send(buff, buff.Length);
+                link.send(buffer, buffer.Length);
                 Console.WriteLine("debug: transport.send in receivedAck while loop middle");
-                receivedACK = receiveAck();
+				dataReceived = receiveAck();
                 Console.WriteLine("debug: transport.send in receivedAck while loop end");
-            
-			}
-
-
-		}
+            }
+			dataReceived = false; // remember to reset
+            // Only sendAck and receiveAck should change the seqNo
+			//seqNo = (byte)((buffer[(int)TransCHKSUM.SEQNO] + 1) % 2); 
+        }
 
 		/// <summary>
 		/// Receive the specified buffer.
@@ -146,24 +174,46 @@ namespace Transportlaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
-			var buff = new byte[buf.Length];
+//			var buff = new byte[buf.Length];
+       
             Console.WriteLine("debug: transport.receive before link.receive");
-            recvSize = link.receive(ref buff);
+            recvSize = link.receive(ref buffer);
             Console.WriteLine("debug: transport.receive after link.receive");
 
-			while(!checksum.checkChecksum(buff, recvSize)||buff[(int)TransCHKSUM.SEQNO] != seqNo)
+			while(!checksum.checkChecksum(buffer, recvSize)||buffer[(int)TransCHKSUM.SEQNO] != seqNo)
 			{
 				Console.WriteLine("debug: receive in checksum while loop begining");
 				sendAck(false);
 				Console.WriteLine("debug: receive in checksum while loop between");
-                recvSize = link.receive(ref buff);    
+                recvSize = link.receive(ref buffer);    
 				Console.WriteLine("debug: receive in checksum while loop end");
 			}
 
 			Console.WriteLine("debug: receive checksum checked out");
-				Array.Copy(buff, 4, buf, 0, (recvSize - 4));
+				Array.Copy(buffer, 4, buf, 0, (recvSize - 4));
                 sendAck(true);
 				  
+
+            /*
+             * 
+            var buff = new byte[buf.Length];
+            Console.WriteLine($"")
+            Console.WriteLine("debug: transport.receive before link.receive");
+            recvSize = link.receive(ref buff);
+            Console.WriteLine("debug: transport.receive after link.receive");
+
+            while(!checksum.checkChecksum(buff, recvSize)||buff[(int)TransCHKSUM.SEQNO] != seqNo)
+            {
+                Console.WriteLine("debug: receive in checksum while loop begining");
+                sendAck(false);
+                Console.WriteLine("debug: receive in checksum while loop between");
+                recvSize = link.receive(ref buff);    
+                Console.WriteLine("debug: receive in checksum while loop end");
+            }
+
+            Console.WriteLine("debug: receive checksum checked out");
+                Array.Copy(buff, 4, buf, 0, (recvSize - 4));
+                sendAck(true);*/
 
             
 			return recvSize;
