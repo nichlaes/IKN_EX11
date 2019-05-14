@@ -33,11 +33,13 @@ namespace Application
 
             // LinkLayer connection is already established, as it is a serial connection, and the APP string
             // determines which end (client or server) of the serial connection this application is.
-            Transport transportConnection = new Transport(BUFSIZE, APP);
+            var transportConnection = new Transport(BUFSIZE, APP);
 
             byte[] fileToRequestBytes = Encoding.ASCII.GetBytes(fileToRequest);
             transportConnection.send(fileToRequestBytes, fileToRequestBytes.Length); // Request specific files size           
-            
+
+			Console.WriteLine($"{fileToRequest} After send");
+
             // Get the filesize
             byte[] fileSizeBufferBytes = new byte[1000];
             int fileSizeRecvSize = transportConnection.receive(ref fileSizeBufferBytes);
