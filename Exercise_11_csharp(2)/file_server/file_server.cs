@@ -25,12 +25,18 @@ namespace Application
 			long fileSize;
 			var buff = new byte[BUFSIZE];
 			var transport = new Transport(1000, APP);
+			var counter = 0;
+           
 
 			while (true)
 			{
-				transport.receive(ref buff);
+				Console.WriteLine("Before receive"); //test
+				counter = transport.receive(ref buff);
+				Console.WriteLine("After receive"); //test
 
-				fileName = Encoding.ASCII.GetString(buff);
+				fileName = Encoding.ASCII.GetString(buff,0, counter);
+
+				Console.WriteLine(fileName); //test
 
 				string file = LIB.extractFileName(fileName);
 				fileSize = LIB.check_File_Exists(file); //error handling
