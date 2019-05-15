@@ -174,12 +174,12 @@ namespace Transportlaget
 
 		public void receiveFile(ref String filename)
         {
-            link.receiveFile(filename);
+            link.receiveFile(ref filename);
         }
 
         public void receiveFile(ref long filesize)
         {
-            link.receiveFile(filesize);
+            link.receiveFile(ref filesize);
         }
         
 
