@@ -30,16 +30,15 @@ namespace Application
 
 			while (true)
 			{
-				Console.WriteLine("Before receive"); //test
 				counter = transport.receive(ref buff);
-				Console.WriteLine("After receive"); //test
 
 				fileName = Encoding.ASCII.GetString(buff,0, counter);
 
-				Console.WriteLine(fileName); //test
-
 				string file = LIB.extractFileName(fileName);
 				fileSize = LIB.check_File_Exists(file); //error handling
+                
+                Console.WriteLine(file); //test
+                Console.WriteLine(fileSize); //test
 
 				if (fileSize != 0)
 				{
