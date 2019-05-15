@@ -172,5 +172,16 @@ namespace Transportlaget
 			link.sendFile(filesize);
         }
 
+		public void receiveFile(ref String filename)
+        {
+            link.receiveFile(filename);
+        }
+
+        public void receiveFile(ref long filesize)
+        {
+            link.receiveFile(filesize);
+        }
+        
+
 	}
 }

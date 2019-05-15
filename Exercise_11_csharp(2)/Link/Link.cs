@@ -166,5 +166,16 @@ namespace Linklaget
         {
 			serialPort.Write(filesize.ToString());
         }
+
+		public void receiveFile(ref String filename)
+        {
+            filename = serialPort.ReadLine();
+        }
+
+        public void receiveFile(ref long filesize)
+        {
+			var size = serialPort.ReadLine();
+			filesize = long.Parse(size);
+        }
 	}
 }
