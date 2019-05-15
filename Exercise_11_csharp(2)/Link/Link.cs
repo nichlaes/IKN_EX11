@@ -157,25 +157,5 @@ namespace Linklaget
             return (j);
         }
 
-		public void sendFile(String filename)
-		{
-			serialPort.Write(filename);
-		}
-
-		public void sendFile(long filesize)
-        {
-			serialPort.Write(filesize.ToString());
-        }
-
-		public void receiveFile(ref String filename)
-        {
-            filename = serialPort.ReadLine();
-        }
-
-        public void receiveFile(ref long filesize)
-        {
-			var size = serialPort.ReadLine();
-			filesize = long.Parse(size);
-        }
 	}
 }

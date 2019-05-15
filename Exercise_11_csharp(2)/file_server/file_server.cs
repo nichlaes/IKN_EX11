@@ -42,8 +42,9 @@ namespace Application
 
 				if (fileSize != 0)
 				{
-					transport.sendFile(fileSize.ToString());
-
+					var fileSizeToSend = Encoding.ASCII.GetBytes(fileSize.ToString());
+                    
+					transport.send(fileSizeToSend, fileSizeToSend.Length);
 					sendFile(file, fileSize, transport);
 				}
 
