@@ -1,5 +1,6 @@
 using System;
 using System.IO.Ports;
+using System.Text;
 
 /// <summary>
 /// Link.
@@ -154,6 +155,16 @@ namespace Linklaget
             buffer.CopyTo(buf, 0);
 
             return (j);
+        }
+
+		public void sendFile(String filename)
+		{
+			serialPort.Write(filename);
+		}
+
+		public void sendFile(long filesize)
+        {
+			serialPort.Write(filesize.ToString());
         }
 	}
 }

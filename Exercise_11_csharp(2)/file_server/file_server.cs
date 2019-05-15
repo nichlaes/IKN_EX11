@@ -3,7 +3,6 @@ using System.IO;
 using System.Text;
 using Transportlaget;
 using Library;
-using Linklaget;
 
 namespace Application
 {
@@ -33,18 +32,18 @@ namespace Application
 				counter = transport.receive(ref buff);
 
 				fileName = Encoding.ASCII.GetString(buff,0, counter);
-
-				string file = LIB.extractFileName(fileName);
+                
+				String file = LIB.extractFileName(fileName);
 				fileSize = LIB.check_File_Exists(file); //error handling
                 
-                Console.WriteLine(file); //test
+				Console.WriteLine($"Filename: {file} end"); //test
+				Console.WriteLine($"Filename: {file.Length}"); //test
                 Console.WriteLine(fileSize); //test
 
 				if (fileSize != 0)
 				{
-					var fileSizeToSend = Encoding.ASCII.GetBytes(fileSize.ToString());
+					transport.sendFile(fileSize.ToString());
 
-					transport.send(fileSizeToSend, fileSizeToSend.Length);
 					sendFile(file, fileSize, transport);
 				}
 

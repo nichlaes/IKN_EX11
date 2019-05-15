@@ -127,13 +127,15 @@ namespace Transportlaget
 
 			while (!receivedACK)
 			{
+				Console.WriteLine("In Transport.send inden link send"); //test
 				link.send(buff, buff.Length);
 				receivedACK = receiveAck();
+
 			}
 
 
 		}
-
+        
 		/// <summary>
 		/// Receive the specified buffer.
 		/// </summary>
@@ -143,19 +145,32 @@ namespace Transportlaget
 		public int receive (ref byte[] buf)
 		{
 			var buff = new byte[buf.Length];
+			Console.WriteLine("In Transport.receive"); //test
 			recvSize = link.receive(ref buff);
 
-			while(!checksum.checkChecksum(buff, recvSize)||buff[(int)TransCHKSUM.SEQNO] != seqNo)
+			while((!checksum.checkChecksum(buff, recvSize))||(buff[(int)TransCHKSUM.SEQNO] != seqNo))
 			{
+				Console.WriteLine("In Transport.receive foer ack"); //test
 				sendAck(false);
-                recvSize = link.receive(ref buff);    
+                recvSize = link.receive(ref buff); 
 			}
 				Array.Copy(buff, 4, buf, 0, (recvSize - 4));
                 sendAck(true);
 				  
 
             
-			return recvSize;
+			return (recvSize-4);
 		}
+
+		public void sendFile(String filename)
+        {
+			link.sendFile(filename);
+        }
+
+        public void sendFile(long filesize)
+        {
+			link.sendFile(filesize);
+        }
+
 	}
 }
