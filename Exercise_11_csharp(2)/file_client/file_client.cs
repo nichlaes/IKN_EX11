@@ -36,6 +36,7 @@ namespace Application
             var transportConnection = new Transport(BUFSIZE, APP);
 
             byte[] fileToRequestBytes = Encoding.ASCII.GetBytes(fileToRequest);
+
             transportConnection.send(fileToRequestBytes, fileToRequestBytes.Length); // Request specific files size           
 
 			Console.WriteLine($"{fileToRequest} After send");
@@ -43,6 +44,9 @@ namespace Application
             // Get the filesize
             byte[] fileSizeBufferBytes = new byte[1000];
             int fileSizeRecvSize = transportConnection.receive(ref fileSizeBufferBytes);
+
+			Console.WriteLine(fileSizeRecvSize);
+            
 
             if (fileSizeRecvSize > 0)// && != errorcode
             {
