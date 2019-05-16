@@ -24,12 +24,13 @@ namespace Application
 			long fileSize;
 			var buff = new byte[BUFSIZE];
 			var transport = new Transport(1000, APP);
+			var transport2 = new Transport(1000, APP);
 			var counter = 0;
            
 
 			while (true)
 			{
-				counter = transport.receive(ref buff);
+				counter = transport2.receive(ref buff);
 
 				fileName = Encoding.ASCII.GetString(buff,0, counter);
                 
@@ -43,7 +44,7 @@ namespace Application
 				if (fileSize != 0)
 				{
 					var fileSizeToSend = Encoding.ASCII.GetBytes(fileSize.ToString());
-                    
+
 					transport.send(fileSizeToSend, fileSizeToSend.Length);
 					sendFile(file, fileSize, transport);
 				}
