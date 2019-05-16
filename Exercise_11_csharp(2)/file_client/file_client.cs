@@ -34,20 +34,24 @@ namespace Application
             // LinkLayer connection is already established, as it is a serial connection, and the APP string
             // determines which end (client or server) of the serial connection this application is.
             var transportConnection = new Transport(BUFSIZE, APP);
+			//New transportConnection
+            var transportConnection2 = new Transport(BUFSIZE, APP);
 
             byte[] fileToRequestBytes = Encoding.ASCII.GetBytes(fileToRequest);
-            transportConnection.send(fileToRequestBytes, fileToRequestBytes.Length); // Request specific files size           
+            transportConnection2.send(fileToRequestBytes, fileToRequestBytes.Length); // Request specific files size           
 
-			Console.WriteLine($"{fileToRequest} After send ");
+                      
 
             // Get the filesize
             byte[] fileSizeBufferBytes = new byte[1000];
             int fileSizeRecvSize = transportConnection.receive(ref fileSizeBufferBytes);
 
+			Console.WriteLine($"Filesize: {fileSizeRecvSize}");
+
             if (fileSizeRecvSize > 0)// && != errorcode
             {
-                Console.WriteLine($"Filesize of requested file is: {fileSizeBufferBytes.ToString()}");
-                receiveFile(fileToRequest, long.Parse(fileSizeBufferBytes.ToString()), transportConnection);
+				Console.WriteLine($"Filesize of requested file is: {Encoding.ASCII.GetString(fileSizeBufferBytes)}");
+				receiveFile(fileToRequest, long.Parse(Encoding.ASCII.GetString(fileSizeBufferBytes)), transportConnection);
             }
 
 
@@ -71,7 +75,6 @@ namespace Application
             byte [] buf = new byte[BUFSIZE];
             
             byte[] fileNameBytes = Encoding.ASCII.GetBytes(fileName);
-            transport.send(fileNameBytes, fileNameBytes.Length); // Request specific file
 
             while (bytesReceived < fileSize)
             {
