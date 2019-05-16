@@ -154,6 +154,18 @@ namespace Linklaget
                 
             }
 
+			Console.WriteLine($"debug in link.send content of buffer");
+            /*
+            for (int index = 0; index < buf.Length/3; index++)
+            {
+                byte byteOnIndex = buf[index];
+                Console.WriteLine($"{byteOnIndex}");
+				//char charOnIndex = Convert.ToChar(byteOnIndex);
+				//Console.WriteLine($"{charOnIndex}");
+            }*/
+
+
+
 			Console.WriteLine("debug link.receive done with alorithm");
             //buffer.CopyTo(buf, 0);
 
