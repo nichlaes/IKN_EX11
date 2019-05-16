@@ -37,8 +37,10 @@ namespace Application
 				fileSize = LIB.check_File_Exists(file); //error handling
                 
 				Console.WriteLine($"Filename: {file} end"); //test
-				Console.WriteLine($"Filename: {file.Length}"); //test
-                Console.WriteLine(fileSize); //test
+				Console.WriteLine($"Filename size: {file.Length}"); //test
+				Console.WriteLine($"Filesize from LIB method {fileSize}"); //test
+
+				File.OpenRead(file);
 
 				if (fileSize != 0)
 				{
