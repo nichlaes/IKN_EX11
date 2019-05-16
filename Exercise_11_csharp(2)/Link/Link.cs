@@ -109,7 +109,7 @@ namespace Linklaget
 		/// </param>
 		public int receive(ref byte[] buf)
         {
-            var buffer = new byte[buf.Length];
+          //  var buffer = new byte[buf.Length];
             int byteReceived;
             bool doneReading = false;
             var i = 0;
@@ -125,35 +125,33 @@ namespace Linklaget
                     doneReading = true;
                 }
                 
-				buf[i++] = (byte)byteReceived;
+				buffer[i++] = (byte)byteReceived;
 
             }
 
             i = 0;
             var j = 0;
 
-            if (buf[i] == (byte)'A')
+            if (buffer[i] == (byte)'A')
             {
                 i++;
 
-                while (buf[i] != (byte)'A')
+                while (buffer[i] != (byte)'A')
                 {
-                    if (buf[i] == (byte)'B')
+                    if (buffer[i] == (byte)'B')
                     {
                         i++;
 
-                        if (buf[i] == (byte)'C')
-                            buffer[j++] = (byte)'A';
-                        else buffer[j++] = (byte)'B';
+                        if (buffer[i] == (byte)'C')
+                            buf[j++] = (byte)'A';
+                        else buf[j++] = (byte)'B';
                     }
-                    else { buffer[j++] = buf[i]; }
-
+                    else { buf[j++] = buffer[i]; }
+                    
                     i++;
                 }
             }
-
-            buffer.CopyTo(buf, 0);
-
+           
             return (j);
         }
 
