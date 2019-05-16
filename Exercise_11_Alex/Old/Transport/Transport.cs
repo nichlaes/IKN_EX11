@@ -174,23 +174,23 @@ namespace Transportlaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
-//			var buff = new byte[buf.Length];
+			var buff = new byte[buffer.Length];
        
             Console.WriteLine("debug: transport.receive before link.receive");
-            recvSize = link.receive(ref buffer);
+            recvSize = link.receive(ref buff);
             Console.WriteLine("debug: transport.receive after link.receive");
 
-			while(!checksum.checkChecksum(buffer, recvSize)||buffer[(int)TransCHKSUM.SEQNO] != seqNo)
+			while(!checksum.checkChecksum(buff, recvSize)||buffer[(int)TransCHKSUM.SEQNO] != seqNo)
 			{
 				Console.WriteLine("debug: receive in checksum while loop begining");
 				sendAck(false);
 				Console.WriteLine("debug: receive in checksum while loop between");
-                recvSize = link.receive(ref buffer);    
+                recvSize = link.receive(ref buff);    
 				Console.WriteLine("debug: receive in checksum while loop end");
 			}
 
 			Console.WriteLine("debug: receive checksum checked out");
-				Array.Copy(buffer, 4, buf, 0, (recvSize - 4));
+				Array.Copy(buff, 4, buf, 0, (recvSize - 4));
                 sendAck(true);
 				  
 
@@ -216,7 +216,7 @@ namespace Transportlaget
                 sendAck(true);*/
 
             
-			return recvSize;
+			return (recvSize - 4);
 		}
 	}
 }

@@ -61,7 +61,7 @@ namespace Application
 
 			
 
-				File.OpenRead(file);
+				//File.OpenRead(file);
 
 
                 // TESTING DONE
