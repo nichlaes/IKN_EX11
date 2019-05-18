@@ -46,12 +46,11 @@ namespace Application
             byte[] fileSizeBufferBytes = new byte[1000];
             int fileSizeRecvSize = transportConnection.receive(ref fileSizeBufferBytes);
 
-			Console.WriteLine($"Filesize: {fileSizeRecvSize}");
-
             if (fileSizeRecvSize > 0)// && != errorcode
             {
 				Console.WriteLine($"Filesize of requested file is: {Encoding.ASCII.GetString(fileSizeBufferBytes)}");
-				receiveFile(fileToRequest, long.Parse(Encoding.ASCII.GetString(fileSizeBufferBytes)), transportConnection);
+				Console.WriteLine($"{long.Parse(Encoding.ASCII.GetString(fileSizeBufferBytes))}");
+				receiveFile(fileToRequest, long.Parse(Encoding.ASCII.GetString(fileSizeBufferBytes)), new Transport(BUFSIZE,APP));
             }
 
 
@@ -75,12 +74,16 @@ namespace Application
             byte [] buf = new byte[BUFSIZE];
             
             byte[] fileNameBytes = Encoding.ASCII.GetBytes(fileName);
+            
+			//Console.WriteLine($"FileSize: {fileSize} bytesReceived: {bytesReceived} ");
 
             while (bytesReceived < fileSize)
             {
-                bytesReceivingNow = transport.receive(ref buf);
-                fs.Write(buf, 0, bytesReceivingNow);
-                bytesReceived += bytesReceivingNow;
+				
+                bytesReceivingNow = transport.receive(ref buf);           
+                
+				fs.Write(buf, 0, bytesReceivingNow);
+                bytesReceived += (long)bytesReceivingNow;
             }
 
             fs.Close();
