@@ -24,7 +24,7 @@ namespace Application
 			long fileSize;
 			var buff = new byte[BUFSIZE];
 			var transportReceivingFilename = new Transport(1000, APP);
-			var transportSendingFile(1000, APP);
+			var transportSendingFile = new Transport(1000, APP);
 			var counter = 0;
            
 
