@@ -79,6 +79,7 @@ namespace Application
             int sendBytes = 0;
 
 			Console.WriteLine($"Filesize /1000 = {fileSize/1000}");
+			Console.WriteLine($"Filesize %1000 = {fileSize % 1000}");
 
             if (fileSize>=1000)
 			{
