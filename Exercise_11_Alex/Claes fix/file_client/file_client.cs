@@ -79,6 +79,7 @@ namespace Application
             {
                 bytesReceivingNow = transport.receive(ref buf);
                 fs.Write(buf, 0, bytesReceivingNow);
+				Console.WriteLine($"debug: in receiveFile, bytesReceivingNow value {bytesReceivingNow}");
                 bytesReceived += bytesReceivingNow;
             }
 
