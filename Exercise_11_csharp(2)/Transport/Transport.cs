@@ -127,13 +127,13 @@ namespace Transportlaget
 
 			while (!receivedACK)
 			{
-				Console.WriteLine("In Transport.send inden link send"); //test
 				link.send(buff, buff.Length);
+				Console.WriteLine("Venter på Ack"); //test
 				receivedACK = receiveAck();
 
 			}
 
-
+			Console.WriteLine("Succes sendt pakke"); //test
 		}
         
 		/// <summary>
@@ -145,12 +145,13 @@ namespace Transportlaget
 		public int receive (ref byte[] buf)
 		{
 			var buff = new byte[(buf.Length+4)];
-			Console.WriteLine("In Transport.receive"); //test
 			recvSize = link.receive(ref buff);
 
 			while((!checksum.checkChecksum(buff, recvSize))||(buff[(int)TransCHKSUM.SEQNO] != seqNo))
 			{
 				sendAck(false);
+				Console.WriteLine("False ack"); //test
+
                 recvSize = link.receive(ref buff); 
 			}
 				Array.Copy(buff, 4, buf, 0, (recvSize - 4));
