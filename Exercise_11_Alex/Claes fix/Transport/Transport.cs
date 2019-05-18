@@ -121,7 +121,7 @@ namespace Transportlaget
 			Array.Copy(buf, 0, buff, 4, size);
 
 			buff[(int)TransCHKSUM.SEQNO] = (byte)seqNo;
-			buff[(int)TransCHKSUM.TYPE] = (byte)0;
+			buff[(int)TransCHKSUM.TYPE] = (byte)TransType.DATA;
 
 			checksum.calcChecksum(ref buff, buff.Length);
 

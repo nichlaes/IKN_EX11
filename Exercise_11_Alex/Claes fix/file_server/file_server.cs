@@ -42,6 +42,8 @@ namespace Application
 
 				File.OpenRead(file);
 
+                // New transporter
+
 				if (fileSize != 0)
 				{
 					var fileSizeToSend = Encoding.ASCII.GetBytes(fileSize.ToString());
