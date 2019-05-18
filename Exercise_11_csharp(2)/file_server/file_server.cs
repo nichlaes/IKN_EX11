@@ -78,13 +78,18 @@ namespace Application
             long numBytes = fileSize;
             int sendBytes = 0;
 
+			Console.WriteLine($"Filesize /1000 = {fileSize/1000}");
+
             if (fileSize>=1000)
 			{
 				for (int i = 0; i < (fileSize / 1000); i++)
                 {
                                    
-                        buff = br.ReadBytes(1000);
+					for (int j = 0; j < BUFSIZE; j++)
+                    {
+                        buff[j] = br.ReadByte();
                         sendBytes++;
+                    }
                     
 
 					transport.send(buff,BUFSIZE);

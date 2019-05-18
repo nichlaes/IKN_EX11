@@ -125,7 +125,7 @@ namespace Transportlaget
 
 			checksum.calcChecksum(ref buff, buff.Length);
 
-			while (!dataReceived)
+			while (!receivedACK)
 			{
 				link.send(buff, buff.Length);
 				Console.WriteLine("Venter på Ack"); //test
@@ -147,7 +147,7 @@ namespace Transportlaget
 			var buff = new byte[(buf.Length+4)];
 			recvSize = link.receive(ref buff);
 
-			while((!checksum.checkChecksum(buff, recvSize))||(buff[(int)TransCHKSUM.SEQNO] != seqNo))
+			while((!checksum.checkChecksum(buff, recvSize))) //||(buff[(int)TransCHKSUM.SEQNO] != seqNo 
 			{
 				sendAck(false);
 				Console.WriteLine("False ack"); //test
