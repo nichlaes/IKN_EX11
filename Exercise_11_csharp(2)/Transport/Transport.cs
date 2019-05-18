@@ -125,15 +125,15 @@ namespace Transportlaget
 
 			checksum.calcChecksum(ref buff, buff.Length);
 
-			while (!receivedACK)
+			while (!dataReceived)
 			{
-				Console.WriteLine("In Transport.send inden link send"); //test
 				link.send(buff, buff.Length);
+				Console.WriteLine("Venter på Ack"); //test
 				receivedACK = receiveAck();
 
 			}
 
-
+			Console.WriteLine("Succes sendt pakke"); //test
 		}
         
 		/// <summary>
@@ -144,13 +144,15 @@ namespace Transportlaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
-			var buff = new byte[buf.Length];
-			Console.WriteLine("In Transport.receive"); //test
+			var buff = new byte[(buf.Length+4)];
 			recvSize = link.receive(ref buff);
 
 			while((!checksum.checkChecksum(buff, recvSize))||(buff[(int)TransCHKSUM.SEQNO] != seqNo))
 			{
 				sendAck(false);
+				Console.WriteLine("False ack"); //test
+				Console.WriteLine($"seqNo: {buff[(int)TransCHKSUM.SEQNO] != seqNo} {!checksum.checkChecksum(buff, recvSize)}  "); //test
+
                 recvSize = link.receive(ref buff); 
 			}
 				Array.Copy(buff, 4, buf, 0, (recvSize - 4));
