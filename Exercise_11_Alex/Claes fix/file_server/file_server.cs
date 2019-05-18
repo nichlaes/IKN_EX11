@@ -82,7 +82,10 @@ namespace Application
             BinaryReader br = new BinaryReader(fs);
             long numBytes = fileSize;
             int sendBytes = 0;
+			int bytesSendingNow;
+			int bytesSent = 0;
 
+            /*
             if (fileSize>=1000)
 			{
 				for (int i = 0; i < fileSize / 1000; i++)
@@ -97,7 +100,7 @@ namespace Application
 			    }
 
 			}
-
+            
 			if (fileSize % 1000 != 0)
             {
 				for (int j = 0; j < (fileSize%1000); j++)
@@ -107,8 +110,26 @@ namespace Application
                 }
 
 				transport.send(buff, (int)(fileSize%1000));
-             }
+             }*/
 
+			while (bytesSent < (fileSize - 1000))
+            {
+				for (int i = 0; i < 1000; i++)
+				{
+					buff[i] = br.ReadByte();
+				}
+				transport.send(buff, BUFSIZE);
+				bytesSent += 1000;
+            }
+
+			for (int i = 0; i < ((int)fileSize - bytesSent); i++)// (fileSize - 1000) == 1000
+			{
+				buff[i] = br.ReadByte();
+			}
+            // Maybe last buffer byte[] to have the size of the last
+			Console.WriteLine("debug: In server in sendfile(), before last transport.send");
+
+			transport.send(buff, (int)fileSize - bytesSent);
 
             
 
