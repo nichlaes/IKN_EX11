@@ -128,19 +128,21 @@ namespace Transportlaget
 
 			int i = 0; // testing
 
-			while (!receivedACK)
-			{
-				i++; // testing
+		//	while (!receivedACK)
+		//	{
+		//		i++; // testing
 
-				Console.WriteLine($"debug: in the send while loop: {i}");
+		//		Console.WriteLine($"debug: in the send while loop: {i}");
 
-				Console.WriteLine("In Transport.send inden link send"); //test
+		//		Console.WriteLine("In Transport.send inden link send"); //test
 				link.send(buff, size + 4);
 				receivedACK = receiveAck();
+			Console.WriteLine($"receivedACK{receivedACK}");
+			Console.WriteLine($"SeqNo: {seqNo}");
+			//Console.WriteLine($"SeqNo: {seqNo=(1+seqNo)%2}");
+		//	}
 
-			}
-
-			i = 0;
+			//	i = 0;
 
 
 		}
@@ -155,7 +157,7 @@ namespace Transportlaget
 		{
 			var buff = new byte[(buf.Length + 4)];
 			Console.WriteLine("In Transport.receive"); //test
-			Console.WriteLine($"The transport.receive buffer has length {buff.Length}");
+			//Console.WriteLine($"The transport.receive buffer has length {buff.Length}");
 			recvSize = link.receive(ref buff);
 
 			while((!checksum.checkChecksum(buff, recvSize)))//||(buff[(int)TransCHKSUM.SEQNO] != seqNo))
@@ -170,6 +172,8 @@ namespace Transportlaget
     			Console.WriteLine("In Transport.receive after while loop");
 				Array.Copy(buff, 4, buf, 0, (recvSize - 4));
                 sendAck(true);
+
+			Console.WriteLine($"SeqNo of recevier(this terminal): {seqNo}\n SeqNo of sender (other terminal) {buf[(int)TransCHKSUM.SEQNO]} or {buff[(int)TransCHKSUM.SEQNO]}");
 				  
 
             
