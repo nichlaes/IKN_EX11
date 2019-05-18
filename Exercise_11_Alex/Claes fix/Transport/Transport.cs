@@ -139,6 +139,7 @@ namespace Transportlaget
 				receivedACK = receiveAck();
 			Console.WriteLine($"receivedACK{receivedACK}");
 			Console.WriteLine($"SeqNo: {seqNo}");
+			seqNo = (byte)((buff[(int)TransCHKSUM.SEQNO] + 1) % 2);
 			//Console.WriteLine($"SeqNo: {seqNo=(1+seqNo)%2}");
 		//	}
 
@@ -172,8 +173,9 @@ namespace Transportlaget
     			Console.WriteLine("In Transport.receive after while loop");
 				Array.Copy(buff, 4, buf, 0, (recvSize - 4));
                 sendAck(true);
+			//seqNo = (byte)((buff[(int)TransCHKSUM.SEQNO] + 1) % 2);
 
-			Console.WriteLine($"SeqNo of recevier(this terminal): {seqNo}\n SeqNo of sender (other terminal) {buf[(int)TransCHKSUM.SEQNO]} or {buff[(int)TransCHKSUM.SEQNO]}");
+			Console.WriteLine($"SeqNo of recevier(this terminal): {seqNo}\n SeqNo of sender (other terminal) {buff[(int)TransCHKSUM.SEQNO]}");
 				  
 
             
