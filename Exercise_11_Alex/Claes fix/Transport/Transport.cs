@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using Linklaget;
 
 /// <summary>
@@ -144,15 +145,16 @@ namespace Transportlaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
-			var buff = new byte[buf.Length];
+			var buff = new byte[(buf.Length + 4)];
 			Console.WriteLine("In Transport.receive"); //test
+			Console.WriteLine($"The transport.receive buffer has length {buff.Length}");
 			recvSize = link.receive(ref buff);
 
 			while((!checksum.checkChecksum(buff, recvSize)))//||(buff[(int)TransCHKSUM.SEQNO] != seqNo))
 			{
 
 				bool checksumResult = checksum.checkChecksum(buff, recvSize);
-				Console.WriteLine($"{checksumResult.ToString()}");
+				Console.WriteLine($"{checksumResult}");
 				Console.WriteLine("In Transport.receive foer ack"); //test
 				sendAck(false);
                 recvSize = link.receive(ref buff); 
