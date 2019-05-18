@@ -144,7 +144,7 @@ namespace Transportlaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
-			var buff = new byte[buf.Length];
+			var buff = new byte[(buf.Length+4)];
 			Console.WriteLine("In Transport.receive"); //test
 			recvSize = link.receive(ref buff);
 
