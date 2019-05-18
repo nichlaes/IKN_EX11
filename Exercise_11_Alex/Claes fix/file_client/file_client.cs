@@ -48,8 +48,8 @@ namespace Application
    
             if (fileSizeRecvSize > 0)// && != errorcode
             {
-                Console.WriteLine($"Filesize of requested file is: {fileSizeBufferBytes.ToString()}");
-				receiveFile(fileToRequest, long.Parse(fileSizeBufferBytes.ToString()), transportGettingFileData);
+				Console.WriteLine($"Filesize of requested file is: {Encoding.ASCII.GetString(fileSizeBufferBytes)}");
+				receiveFile(fileToRequest, long.Parse(Encoding.ASCII.GetString(fileSizeBufferBytes)), transportGettingFileData);
             }
 
 
