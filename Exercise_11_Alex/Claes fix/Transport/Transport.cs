@@ -150,7 +150,9 @@ namespace Transportlaget
 
 			while((!checksum.checkChecksum(buff, recvSize)))//||(buff[(int)TransCHKSUM.SEQNO] != seqNo))
 			{
-				Console.WriteLine($"{checksum.checkChecksum(buff, recvSize)}");
+
+				bool checksumResult = checksum.checkChecksum(buff, recvSize);
+				Console.WriteLine($"{checksumResult.ToString()}");
 				Console.WriteLine("In Transport.receive foer ack"); //test
 				sendAck(false);
                 recvSize = link.receive(ref buff); 
