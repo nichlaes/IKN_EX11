@@ -112,13 +112,21 @@ namespace Application
 				transport.send(buff, (int)(fileSize%1000));
              }*/
 
+			// TESTING FILE SENT CORRECTLY TO SERIAL PORT
+
+           // FileStream fstest = File.Create("sendTest" + fileName);// hope this work
+
+            ////
+
 			while (bytesSent < (fileSize - 1000))
             {
 				for (int i = 0; i < 1000; i++)
 				{
 					buff[i] = br.ReadByte();
+
 				}
-				transport.send(buff, BUFSIZE);
+				//fstest.Write(buff, 0, BUFSIZE); // testing
+				transport.send(buff, buff.Length);
 				bytesSent += 1000;
             }
 
@@ -126,10 +134,12 @@ namespace Application
 			{
 				buff[i] = br.ReadByte();
 			}
-            // Maybe last buffer byte[] to have the size of the last
+			// Maybe last buffer byte[] to have the size of the last
+			//fstest.Write(buff, 0, buff.Length); // testing
 			Console.WriteLine("debug: In server in sendfile(), before last transport.send");
 
 			transport.send(buff, (int)fileSize - bytesSent);
+
 
             
 
