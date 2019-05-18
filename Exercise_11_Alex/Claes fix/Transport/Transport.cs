@@ -129,7 +129,7 @@ namespace Transportlaget
 			while (!receivedACK)
 			{
 				Console.WriteLine("In Transport.send inden link send"); //test
-				link.send(buff, buff.Length);
+				link.send(buff, size + 4);
 				receivedACK = receiveAck();
 
 			}

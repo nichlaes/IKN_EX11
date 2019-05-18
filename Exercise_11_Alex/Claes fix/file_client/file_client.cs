@@ -68,15 +68,15 @@ namespace Application
 		{
             // TO DO Your own code
             FileStream fs = File.Create(fileName);
-            long bytesReceived = 0;
+            long bytesReceived = 0; 
             int bytesReceivingNow;
-            byte [] buf = new byte[BUFSIZE];
             
            // byte[] fileNameBytes = Encoding.ASCII.GetBytes(fileName);
            // transport.send(fileNameBytes, fileNameBytes.Length); // specific file ALREADY REQUESTED
 
             while (bytesReceived < fileSize)
             {
+				byte[] buf = new byte[BUFSIZE];
                 bytesReceivingNow = transport.receive(ref buf);
                 fs.Write(buf, 0, bytesReceivingNow);
 				Console.WriteLine($"debug: in receiveFile, bytesReceivingNow value {bytesReceivingNow}");
