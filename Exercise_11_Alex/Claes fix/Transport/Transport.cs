@@ -126,13 +126,21 @@ namespace Transportlaget
 
 			checksum.calcChecksum(ref buff, buff.Length);
 
+			int i = 0; // testing
+
 			while (!receivedACK)
 			{
+				i++; // testing
+
+				Console.WriteLine($"debug: in the send while loop: {i}");
+
 				Console.WriteLine("In Transport.send inden link send"); //test
 				link.send(buff, size + 4);
 				receivedACK = receiveAck();
 
 			}
+
+			i = 0;
 
 
 		}
@@ -155,10 +163,11 @@ namespace Transportlaget
 
 				bool checksumResult = checksum.checkChecksum(buff, recvSize);
 				Console.WriteLine($"{checksumResult}");
-				Console.WriteLine("In Transport.receive foer ack"); //test
+				Console.WriteLine("In Transport.receive while loop before ack"); //test
 				sendAck(false);
                 recvSize = link.receive(ref buff); 
 			}
+    			Console.WriteLine("In Transport.receive after while loop");
 				Array.Copy(buff, 4, buf, 0, (recvSize - 4));
                 sendAck(true);
 				  

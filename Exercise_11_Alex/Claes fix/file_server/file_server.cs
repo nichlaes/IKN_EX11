@@ -130,6 +130,8 @@ namespace Application
 				bytesSent += 1000;
             }
 
+           // var buffLastBytes = 
+
 			for (int i = 0; i < ((int)fileSize - bytesSent); i++)// (fileSize - 1000) == 1000
 			{
 				buff[i] = br.ReadByte();
