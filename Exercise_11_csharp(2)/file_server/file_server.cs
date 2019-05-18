@@ -26,30 +26,31 @@ namespace Application
 			var transport = new Transport(1000, APP);
 			var transport2 = new Transport(1000, APP);
 			var counter = 0;
-           
 
-			while (true)
-			{
-				counter = transport2.receive(ref buff);
+			counter = transport2.receive(ref buff);
 
-				fileName = Encoding.ASCII.GetString(buff,0, counter);
-                
-				String file = LIB.extractFileName(fileName);
-				fileSize = LIB.check_File_Exists(file); //error handling
-                
-				Console.WriteLine($"Filename: {file} end"); //test
-				Console.WriteLine($"Filename: {file.Length}"); //test
-                Console.WriteLine(fileSize); //test
+            fileName = Encoding.ASCII.GetString(buff, 0, counter);
+
+            String file = LIB.extractFileName(fileName);
+            fileSize = LIB.check_File_Exists(file); //error handling
+
+            Console.WriteLine($"Filename: {file} end"); //test
+            Console.WriteLine($"Filename: {file.Length}"); //test
+            Console.WriteLine(fileSize); //test
+
+			//while (true)
+			//{
+
 
 				if (fileSize != 0)
 				{
 					var fileSizeToSend = Encoding.ASCII.GetBytes(fileSize.ToString());
 
 					transport.send(fileSizeToSend, fileSizeToSend.Length);
-					sendFile(file, fileSize, transport);
+				    sendFile(file, fileSize, new Transport(BUFSIZE,APP));
 				}
 
-			}      
+			//}      
 		}
 
 		/// <summary>
@@ -79,20 +80,19 @@ namespace Application
 
             if (fileSize>=1000)
 			{
-				for (int i = 0; i < fileSize / 1000; i++)
+				for (int i = 0; i < (fileSize / 1000); i++)
                 {
-                    for (int j = 0; j < 1000; j++)
-                    {
-                        buff[j] = br.ReadByte();
+                                   
+                        buff = br.ReadBytes(1000);
                         sendBytes++;
-                    }
+                    
 
 					transport.send(buff,BUFSIZE);
 			    }
 
 			}
 
-			if (fileSize % 1000 != 0)
+			if ((fileSize % 1000) != 0)
             {
 				for (int j = 0; j < (fileSize%1000); j++)
                 {
