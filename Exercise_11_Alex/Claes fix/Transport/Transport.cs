@@ -214,6 +214,8 @@ namespace Transportlaget
 			//Console.WriteLine($"The transport.receive buffer has length {buff.Length}");
 			recvSize = link.receive(ref buffer);
 
+
+			// CHECK DATA IS CORRUPTED
 			while((!checksum.checkChecksum(buffer, recvSize)))//||(buff[(int)TransCHKSUM.SEQNO] != seqNo))
 			{
 
@@ -222,12 +224,17 @@ namespace Transportlaget
                 sendAck(false);
                 recvSize = link.receive(ref buffer); 
 			}
-    			Console.WriteLine("In Transport.receive after while loop");
+
+
+            // CHECK ACK IS CORRUPTED
+            //if (buffer[(int)])
+
+    			//Console.WriteLine("In Transport.receive after while loop");
 				Array.Copy(buffer, 4, buf, 0, (recvSize - 4));
                 sendAck(true);
 			//seqNo = (byte)((buff[(int)TransCHKSUM.SEQNO] + 1) % 2);
 
-			Console.WriteLine($"SeqNo of recevier(this terminal): {seqNo}\n SeqNo of sender (other terminal) {buffer[(int)TransCHKSUM.SEQNO]}");
+			//Console.WriteLine($"SeqNo of recevier(this terminal): {seqNo}\n SeqNo of sender (other terminal) {buffer[(int)TransCHKSUM.SEQNO]}");
 				  
 
             
