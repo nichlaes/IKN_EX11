@@ -120,10 +120,10 @@ namespace Transportlaget
 		/// Size.
 		/// </param>
 		public void send(byte[] buf, int size)
-		{
+		{/*
 			bool receivedACK = false;
 			byte[] buff = new byte[(size + 4)];
-			Array.Copy(buf, 0, buffer, 4, size);
+			Array.Copy(buf, 0, buff, 4, size);
 
 			Console.WriteLine($"SeqNo inserted into byte[] buff : {seqNo}");
 			buff[(int)TransCHKSUM.SEQNO] = (byte)seqNo;
@@ -133,13 +133,13 @@ namespace Transportlaget
 
 			int i = 0; // testing
 
-    /*        // CHECKSUM ERROR CREATION
+            // CHECKSUM ERROR CREATION
 			if(++errorCount == 3)
 			{
 				buff[1]++;
 				Console.WriteLine("Noise! Error! Byte 1 is spoiled in third transmission");
 			}
-            */
+            
            
 
 
@@ -158,7 +158,7 @@ namespace Transportlaget
 		//		Console.WriteLine("In Transport.send inden link send"); //test
 				link.send(buff, size + 4);
 				receivedACK = receiveAck();
-			    Console.WriteLine($"receivedACK{receivedACK}");
+				Console.WriteLine($"receivedACK: {receivedACK}");
 		//	    Console.WriteLine($"SeqNo: {seqNo}");
 
            }
@@ -168,7 +168,36 @@ namespace Transportlaget
             //Console.WriteLine($"SeqNo of after updated: {seqNo}");
 
 			i = 0; // testing
+            */
 
+			int i = 0; // testing
+
+			do
+			{
+				byte[] buff = new byte[(size + 4)];
+				Array.Copy(buf, 0, buff, 4, size);
+
+				Console.WriteLine($"SeqNo inserted into byte[] buff : {seqNo}");
+				buff[(int)TransCHKSUM.SEQNO] = (byte)seqNo;
+				buff[(int)TransCHKSUM.TYPE] = (byte)TransType.DATA;
+
+				checksum.calcChecksum(ref buff, buff.Length);
+
+				// CHECKSUM ERROR CREATION
+				if (++errorCount == 3)
+				{
+					buff[1]++;
+					Console.WriteLine("Noise! Error! Byte 1 is spoiled in third transmission");
+				}
+
+				i++; // testing
+
+				Console.WriteLine($"debug: in the send while loop: {i}"); // testing
+
+				link.send(buff, size + 4);
+
+
+			} while (!receiveAck());
 
 		}
         
