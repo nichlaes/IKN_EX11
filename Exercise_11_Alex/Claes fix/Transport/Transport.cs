@@ -128,22 +128,24 @@ namespace Transportlaget
 
 			int i = 0; // testing
 
-		//	while (!receivedACK)
-		//	{
-		//		i++; // testing
+			while (!receivedACK)
+			{
+				i++; // testing
 
-		//		Console.WriteLine($"debug: in the send while loop: {i}");
+				Console.WriteLine($"debug: in the send while loop: {i}");
 
 		//		Console.WriteLine("In Transport.send inden link send"); //test
 				link.send(buff, size + 4);
 				receivedACK = receiveAck();
 			Console.WriteLine($"receivedACK{receivedACK}");
-			Console.WriteLine($"SeqNo: {seqNo}");
-			seqNo = (byte)((buff[(int)TransCHKSUM.SEQNO] + 1) % 2);
-			//Console.WriteLine($"SeqNo: {seqNo=(1+seqNo)%2}");
-		//	}
+			//Console.WriteLine($"SeqNo: {seqNo}");
 
-			//	i = 0;
+           }
+
+			seqNo = (byte)((buff[(int)TransCHKSUM.SEQNO] + 1) % 2);
+            Console.WriteLine($"SeqNo: {seqNo}");
+
+			i = 0;
 
 
 		}
