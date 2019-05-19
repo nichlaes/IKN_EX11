@@ -75,7 +75,7 @@ namespace Transportlaget
 			dataReceived = true;
 
 
-			Console.WriteLine($"SeqNo to be received in receiveAck: {buffer[(int)TransCHKSUM.SEQNO]}");
+			//Console.WriteLine($"SeqNo to be received in receiveAck: {buffer[(int)TransCHKSUM.SEQNO]}");
 
 			if (recvSize == (int)TransSize.ACKSIZE) {
 				dataReceived = false;
@@ -106,7 +106,7 @@ namespace Transportlaget
 				(ackType ? (byte)buffer [(int)TransCHKSUM.SEQNO] : (byte)(buffer [(int)TransCHKSUM.SEQNO] + 1) % 2); 
 			ackBuf [(int)TransCHKSUM.TYPE] = (byte)(int)TransType.ACK;
 			checksum.calcChecksum (ref ackBuf, (int)TransSize.ACKSIZE);
-			Console.WriteLine($"SeqNo to be sent in sendAck{ackBuf[(int)TransCHKSUM.SEQNO]}");
+			//Console.WriteLine($"SeqNo to be sent in sendAck{ackBuf[(int)TransCHKSUM.SEQNO]}");
 			link.send(ackBuf, (int)TransSize.ACKSIZE);
 		}
 
@@ -122,30 +122,29 @@ namespace Transportlaget
 		public void send(byte[] buf, int size)
 		{
 			bool receivedACK = false;
-			byte[] buff;
-   
-			buff = new byte[(size + 4)];
-			Array.Copy(buf, 0, buff, 4, size);
+			//byte[] buff = new byte[(size + 4)];
+			Array.Copy(buf, 0, buffer, 4, size);
 
 			Console.WriteLine($"SeqNo inserted into byte[] buff : {seqNo}");
-			buff[(int)TransCHKSUM.SEQNO] = (byte)seqNo;
-			buff[(int)TransCHKSUM.TYPE] = (byte)TransType.DATA;
+			buffer[(int)TransCHKSUM.SEQNO] = (byte)seqNo;
+			buffer[(int)TransCHKSUM.TYPE] = (byte)TransType.DATA;
 
-			checksum.calcChecksum(ref buff, buff.Length);
+			checksum.calcChecksum(ref buffer, buffer.Length);
 
 			int i = 0; // testing
 
-            // CHECKSUM ERROR CREATION
+    /*        // CHECKSUM ERROR CREATION
 			if(++errorCount == 3)
 			{
 				buff[1]++;
 				Console.WriteLine("Noise! Error! Byte 1 is spoiled in third transmission");
 			}
-
+            */
+           
 
 
             // Sending the message first time
-			link.send(buff, size + 4);
+			link.send(buffer, size + 4);
             receivedACK = receiveAck();
 			Console.WriteLine($"receivedACK{receivedACK}");
 
@@ -157,18 +156,18 @@ namespace Transportlaget
 				Console.WriteLine($"debug: in the send while loop: {i}");
 
 		//		Console.WriteLine("In Transport.send inden link send"); //test
-				link.send(buff, size + 4);
+				link.send(buffer, size + 4);
 				receivedACK = receiveAck();
 			    Console.WriteLine($"receivedACK{receivedACK}");
-			//Console.WriteLine($"SeqNo: {seqNo}");
+		//	    Console.WriteLine($"SeqNo: {seqNo}");
 
            }
 
 			//old_seqNo = DEFAULT_SEQNO;
 			//seqNo = (byte)((buff[(int)TransCHKSUM.SEQNO] + 1) % 2);
-            Console.WriteLine($"SeqNo of after updated: {seqNo}");
+            //Console.WriteLine($"SeqNo of after updated: {seqNo}");
 
-			i = 0;
+			i = 0; // testing
 
 
 		}
@@ -181,25 +180,25 @@ namespace Transportlaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
-			var buff = new byte[(buf.Length + 4)];
+			//var buff = new byte[(buf.Length + 4)];
 			Console.WriteLine("In Transport.receive"); //test
 			//Console.WriteLine($"The transport.receive buffer has length {buff.Length}");
-			recvSize = link.receive(ref buff);
+			recvSize = link.receive(ref buffer);
 
-			while((!checksum.checkChecksum(buff, recvSize)))//||(buff[(int)TransCHKSUM.SEQNO] != seqNo))
+			while((!checksum.checkChecksum(buffer, recvSize)))//||(buff[(int)TransCHKSUM.SEQNO] != seqNo))
 			{
 
-				bool checksumResult = checksum.checkChecksum(buff, recvSize);
+				bool checksumResult = checksum.checkChecksum(buffer, recvSize);
 				Console.WriteLine($"Checksum result in while loop: {checksumResult}");
                 sendAck(false);
-                recvSize = link.receive(ref buff); 
+                recvSize = link.receive(ref buffer); 
 			}
     			Console.WriteLine("In Transport.receive after while loop");
-				Array.Copy(buff, 4, buf, 0, (recvSize - 4));
+				Array.Copy(buffer, 4, buf, 0, (recvSize - 4));
                 sendAck(true);
 			//seqNo = (byte)((buff[(int)TransCHKSUM.SEQNO] + 1) % 2);
 
-			Console.WriteLine($"SeqNo of recevier(this terminal): {seqNo}\n SeqNo of sender (other terminal) {buff[(int)TransCHKSUM.SEQNO]}");
+			Console.WriteLine($"SeqNo of recevier(this terminal): {seqNo}\n SeqNo of sender (other terminal) {buffer[(int)TransCHKSUM.SEQNO]}");
 				  
 
             
