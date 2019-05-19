@@ -122,14 +122,14 @@ namespace Transportlaget
 		public void send(byte[] buf, int size)
 		{
 			bool receivedACK = false;
-			//byte[] buff = new byte[(size + 4)];
+			byte[] buff = new byte[(size + 4)];
 			Array.Copy(buf, 0, buffer, 4, size);
 
 			Console.WriteLine($"SeqNo inserted into byte[] buff : {seqNo}");
-			buffer[(int)TransCHKSUM.SEQNO] = (byte)seqNo;
-			buffer[(int)TransCHKSUM.TYPE] = (byte)TransType.DATA;
+			buff[(int)TransCHKSUM.SEQNO] = (byte)seqNo;
+			buff[(int)TransCHKSUM.TYPE] = (byte)TransType.DATA;
 
-			checksum.calcChecksum(ref buffer, buffer.Length);
+			checksum.calcChecksum(ref buff, buff.Length);
 
 			int i = 0; // testing
 
@@ -144,7 +144,7 @@ namespace Transportlaget
 
 
             // Sending the message first time
-			link.send(buffer, size + 4);
+			link.send(buff, size + 4);
             receivedACK = receiveAck();
 			Console.WriteLine($"receivedACK{receivedACK}");
 
@@ -156,7 +156,7 @@ namespace Transportlaget
 				Console.WriteLine($"debug: in the send while loop: {i}");
 
 		//		Console.WriteLine("In Transport.send inden link send"); //test
-				link.send(buffer, size + 4);
+				link.send(buff, size + 4);
 				receivedACK = receiveAck();
 			    Console.WriteLine($"receivedACK{receivedACK}");
 		//	    Console.WriteLine($"SeqNo: {seqNo}");
