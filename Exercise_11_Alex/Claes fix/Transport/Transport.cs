@@ -74,6 +74,9 @@ namespace Transportlaget
 			recvSize = link.receive(ref buffer);
 			dataReceived = true;
 
+
+			Console.WriteLine($"SeqNo to be received in receiveAck: {buffer[(int)TransCHKSUM.SEQNO]}");
+
 			if (recvSize == (int)TransSize.ACKSIZE) {
 				dataReceived = false;
 				if (!checksum.checkChecksum (buffer, (int)TransSize.ACKSIZE) ||
@@ -98,9 +101,12 @@ namespace Transportlaget
 		{
 			byte[] ackBuf = new byte[(int)TransSize.ACKSIZE];
 			ackBuf [(int)TransCHKSUM.SEQNO] = (byte)
-				(ackType ? (byte)buffer [(int)TransCHKSUM.SEQNO] : (byte)(buffer [(int)TransCHKSUM.SEQNO] + 1) % 2);
+				// if ACK we send the same SEQNO that we got back, if false (NAK) we send not the same SEQNO but the other, 
+				// which receiveAck understands as a NAK and returns false
+				(ackType ? (byte)buffer [(int)TransCHKSUM.SEQNO] : (byte)(buffer [(int)TransCHKSUM.SEQNO] + 1) % 2); 
 			ackBuf [(int)TransCHKSUM.TYPE] = (byte)(int)TransType.ACK;
 			checksum.calcChecksum (ref ackBuf, (int)TransSize.ACKSIZE);
+			Console.WriteLine($"SeqNo to be sent in sendAck{ackBuf[(int)TransCHKSUM.SEQNO]}");
 			link.send(ackBuf, (int)TransSize.ACKSIZE);
 		}
 
@@ -121,6 +127,7 @@ namespace Transportlaget
 			buff = new byte[(size + 4)];
 			Array.Copy(buf, 0, buff, 4, size);
 
+			Console.WriteLine($"SeqNo inserted into byte[] buff : {seqNo}");
 			buff[(int)TransCHKSUM.SEQNO] = (byte)seqNo;
 			buff[(int)TransCHKSUM.TYPE] = (byte)TransType.DATA;
 
@@ -128,7 +135,22 @@ namespace Transportlaget
 
 			int i = 0; // testing
 
-			while (!receivedACK)
+            // CHECKSUM ERROR CREATION
+			if(++errorCount == 3)
+			{
+				buff[1]++;
+				Console.WriteLine("Noise! Error! Byte 1 is spoiled in third transmission");
+			}
+
+
+
+            // Sending the message first time
+			link.send(buff, size + 4);
+            receivedACK = receiveAck();
+			Console.WriteLine($"receivedACK{receivedACK}");
+
+            // If received NAK
+            while (!receivedACK)
 			{
 				i++; // testing
 
@@ -137,13 +159,14 @@ namespace Transportlaget
 		//		Console.WriteLine("In Transport.send inden link send"); //test
 				link.send(buff, size + 4);
 				receivedACK = receiveAck();
-			Console.WriteLine($"receivedACK{receivedACK}");
+			    Console.WriteLine($"receivedACK{receivedACK}");
 			//Console.WriteLine($"SeqNo: {seqNo}");
 
            }
 
-			seqNo = (byte)((buff[(int)TransCHKSUM.SEQNO] + 1) % 2);
-            Console.WriteLine($"SeqNo: {seqNo}");
+			//old_seqNo = DEFAULT_SEQNO;
+			//seqNo = (byte)((buff[(int)TransCHKSUM.SEQNO] + 1) % 2);
+            Console.WriteLine($"SeqNo of after updated: {seqNo}");
 
 			i = 0;
 
@@ -167,9 +190,8 @@ namespace Transportlaget
 			{
 
 				bool checksumResult = checksum.checkChecksum(buff, recvSize);
-				Console.WriteLine($"{checksumResult}");
-				Console.WriteLine("In Transport.receive while loop before ack"); //test
-				sendAck(false);
+				Console.WriteLine($"Checksum result in while loop: {checksumResult}");
+                sendAck(false);
                 recvSize = link.receive(ref buff); 
 			}
     			Console.WriteLine("In Transport.receive after while loop");
