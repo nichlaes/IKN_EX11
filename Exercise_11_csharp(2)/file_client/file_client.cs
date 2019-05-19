@@ -67,21 +67,19 @@ namespace Application
 		/// </param>
 		private void receiveFile (String fileName, long fileSize, Transport transport)
 		{
-            // TO DO Your own code
             FileStream fs = File.Create(fileName);
             long bytesReceived = 0;
             int bytesReceivingNow;
             byte [] buf = new byte[BUFSIZE];
             
             byte[] fileNameBytes = Encoding.ASCII.GetBytes(fileName);
-            
+
 			//Console.WriteLine($"FileSize: {fileSize} bytesReceived: {bytesReceived} ");
 
             while (bytesReceived < fileSize)
             {
-				
-                bytesReceivingNow = transport.receive(ref buf);           
-                
+                bytesReceivingNow = transport.receive(ref buf);
+
 				fs.Write(buf, 0, bytesReceivingNow);
                 bytesReceived += (long)bytesReceivingNow;
             }

@@ -128,12 +128,12 @@ namespace Transportlaget
 			while (!receivedACK)
 			{
 				link.send(buff, buff.Length);
-				Console.WriteLine("Venter på Ack"); //test
+				Console.WriteLine("Waiting for Ack");
 				receivedACK = receiveAck();
 
 			}
 
-			Console.WriteLine("Succes sendt pakke"); //test
+			Console.WriteLine($"Succes: Packages {seqNo}");
 		}
         
 		/// <summary>
@@ -146,18 +146,24 @@ namespace Transportlaget
 		{
 			recvSize = link.receive(ref buffer);
 
-			while((!checksum.checkChecksum(buffer, recvSize))|| (buffer[(int)TransCHKSUM.SEQNO] != seqNo)) 
+			while(!checksum.checkChecksum(buffer, recvSize)) 
 			{
 				sendAck(false);
-				Console.WriteLine("False ack"); //test
-				Console.WriteLine($"seqNo: {buffer[(int)TransCHKSUM.SEQNO] != seqNo} {checksum.checkChecksum(buffer, recvSize)}  "); //test
-
+				Console.WriteLine("ERROR: Missing data");
                 recvSize = link.receive(ref buffer); 
 			}
-
-			sendAck(true);
-			Array.Copy(buffer, 4, buf, 0, (recvSize - 4));
-              
+			if (buffer[(int)TransCHKSUM.SEQNO] != seqNo){
+				sendAck(true);
+			}
+			else 
+			{
+				seqNo = (byte)((buffer[(int)TransCHKSUM.SEQNO] + 1) % 2);
+                sendAck(true);
+                Array.Copy(buffer, 4, buf, 0, (recvSize - 4));
+			}
+				
+            
+			              
 				  
 
             
