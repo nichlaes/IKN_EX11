@@ -34,12 +34,8 @@ namespace Application
             String file = LIB.extractFileName(fileName);
             fileSize = LIB.check_File_Exists(file); //error handling
 
-            Console.WriteLine($"Filename: {file} end"); //test
-            Console.WriteLine($"Filename: {file.Length}"); //test
-            Console.WriteLine(fileSize); //test
-
-			//while (true)
-			//{
+            Console.WriteLine($"Filename: {file}"); 
+            Console.WriteLine($"Filename: {file.Length}"); 
 
 
 				if (fileSize != 0)
@@ -49,8 +45,7 @@ namespace Application
 					transport.send(fileSizeToSend, fileSizeToSend.Length);
 				    sendFile(file, fileSize, new Transport(BUFSIZE,APP));
 				}
-
-			//}      
+                
 		}
 
 		/// <summary>
@@ -77,9 +72,6 @@ namespace Application
             BinaryReader br = new BinaryReader(fs);
             long numBytes = fileSize;
             int sendBytes = 0;
-
-			Console.WriteLine($"Filesize /1000 = {fileSize/1000}");
-			Console.WriteLine($"Filesize %1000 = {fileSize % 1000}");
 
             if (fileSize>=1000)
 			{
