@@ -154,23 +154,15 @@ namespace Transportlaget
 			}
 			if (buffer[(int)TransCHKSUM.SEQNO] != seqNo){
 				sendAck(true);
+				return 0;
 			}
 			else 
 			{
 				seqNo = (byte)((buffer[(int)TransCHKSUM.SEQNO] + 1) % 2);
                 sendAck(true);
                 Array.Copy(buffer, 4, buf, 0, (recvSize - 4));
-			}
-				
-            
-			              
-				  
-
-            
-			return (recvSize-4);
-		}
-
-        
-
+				return (recvSize - 4);
+			}                  
+		}      
 	}
 }
