@@ -49,7 +49,6 @@ namespace Application
             if (fileSizeRecvSize > 0)// && != errorcode
             {
 				Console.WriteLine($"Filesize of requested file is: {Encoding.ASCII.GetString(fileSizeBufferBytes)}");
-				Console.WriteLine($"{long.Parse(Encoding.ASCII.GetString(fileSizeBufferBytes))}");
 				receiveFile(fileToRequest, long.Parse(Encoding.ASCII.GetString(fileSizeBufferBytes)), new Transport(BUFSIZE,APP));
             }
 
@@ -73,8 +72,6 @@ namespace Application
             byte [] buf = new byte[BUFSIZE];
             
             byte[] fileNameBytes = Encoding.ASCII.GetBytes(fileName);
-
-			//Console.WriteLine($"FileSize: {fileSize} bytesReceived: {bytesReceived} ");
 
             while (bytesReceived < fileSize)
             {

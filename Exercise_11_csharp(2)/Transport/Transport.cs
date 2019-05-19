@@ -100,6 +100,11 @@ namespace Transportlaget
 				(ackType ? (byte)buffer [(int)TransCHKSUM.SEQNO] : (byte)(buffer [(int)TransCHKSUM.SEQNO] + 1) % 2);
 			ackBuf [(int)TransCHKSUM.TYPE] = (byte)(int)TransType.ACK;
 			checksum.calcChecksum (ref ackBuf, (int)TransSize.ACKSIZE);
+			if (++errorCount == 2)//ERROR!!!
+			{
+				ackBuf[0]++;
+				Console.WriteLine("NOISE");
+			}
 			link.send(ackBuf, (int)TransSize.ACKSIZE);
 		}
 
@@ -145,9 +150,6 @@ namespace Transportlaget
 		public int receive (ref byte[] buf)
 		{
 			recvSize = link.receive(ref buffer);
-
-			if (errorCount++ == 3)
-				buffer[4]++;
 
 			while(!checksum.checkChecksum(buffer, recvSize)) 
 			{
