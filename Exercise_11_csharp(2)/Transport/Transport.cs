@@ -146,6 +146,9 @@ namespace Transportlaget
 		{
 			recvSize = link.receive(ref buffer);
 
+			if (errorCount++ == 3)
+				buffer[4]++;
+
 			while(!checksum.checkChecksum(buffer, recvSize)) 
 			{
 				sendAck(false);
