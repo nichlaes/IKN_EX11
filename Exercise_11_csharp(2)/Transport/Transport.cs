@@ -144,20 +144,19 @@ namespace Transportlaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
-			var buff = new byte[(buf.Length+4)];
-			recvSize = link.receive(ref buff);
+			recvSize = link.receive(ref buffer);
 
-			while((!checksum.checkChecksum(buff, recvSize))|| (buff[(int)TransCHKSUM.SEQNO] != seqNo)) 
+			while((!checksum.checkChecksum(buffer, recvSize))|| (buffer[(int)TransCHKSUM.SEQNO] != seqNo)) 
 			{
 				sendAck(false);
 				Console.WriteLine("False ack"); //test
-				Console.WriteLine($"seqNo: {buff[(int)TransCHKSUM.SEQNO] != seqNo} {!checksum.checkChecksum(buff, recvSize)}  "); //test
+				Console.WriteLine($"seqNo: {buffer[(int)TransCHKSUM.SEQNO] != seqNo} {checksum.checkChecksum(buffer, recvSize)}  "); //test
 
-                recvSize = link.receive(ref buff); 
+                recvSize = link.receive(ref buffer); 
 			}
 
 			sendAck(true);
-			Array.Copy(buff, 4, buf, 0, (recvSize - 4));
+			Array.Copy(buffer, 4, buf, 0, (recvSize - 4));
               
 				  
 
